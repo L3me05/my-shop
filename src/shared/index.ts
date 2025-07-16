@@ -1,0 +1,1 @@
+export { NavBar } from './core/components/navbar/NavBar';
