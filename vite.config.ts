@@ -7,6 +7,10 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-
   ],
+  server: {
+    watch: {
+      ignored: ['**/server/**']
+    }
+  }
 })
