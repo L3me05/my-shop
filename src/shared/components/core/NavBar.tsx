@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import logo from "../../../../assets/logo.png";
+import logo from "../../../assets/logo.png";
 
 const isActive = (o: {isActive: boolean}) => 
     o.isActive ? 'text-xl text-sky-400 font-bold' : 'text-xl text-white'
