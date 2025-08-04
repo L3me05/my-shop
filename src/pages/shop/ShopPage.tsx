@@ -4,6 +4,7 @@ import { pb } from '../../pocketbase';
 import { ProductCard } from './components/ProductCard';
 import {ServerError} from "../../shared";
 import {Spinner} from "../../shared/components/core/Spinner.tsx";
+import {useCart, useCartPanel} from "../../services/cart";
 
 
 console.log(import.meta.env.VITE_POCKET_BASE_URL);
@@ -13,6 +14,9 @@ export function ShopPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [pending, setPending] = useState<boolean>(false);
     const [error, setError] = useState<boolean>(false);
+
+    const openCartPanel = useCartPanel(state => state.openOverlay);
+    const addToCart = useCart(state => state.addToCart);
 
     useEffect(() => {
         loadData();
@@ -34,9 +38,10 @@ export function ShopPage() {
         
     }
 
-    function addToCart(product: Partial<Product>) {
-        console.log(product);
-    }
+    // function addToCart(product: Partial<Product>) {
+    //     console.log(product);
+    //     addCart(product)
+    // }
 
     return (
         <div>
@@ -49,7 +54,14 @@ export function ShopPage() {
                 {
                     products.map(p => {
                         return (
-                            <ProductCard product={p} onAddToCart={addToCart} key={p.id} />                                
+                            <ProductCard
+                                product={p}
+                                onAddToCart={() => {
+                                    addToCart(p)
+                                    openCartPanel()
+                                }}
+                                key={p.id}
+                            />
                         )
                     })
                 }
