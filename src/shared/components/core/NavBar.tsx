@@ -1,7 +1,9 @@
-import { NavLink } from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import logo from "../../../assets/logo.png";
 import {CartPanel} from "./CartPanel.tsx";
 import {selectCartIsEmpty, selectTotalCartItems, useCart, useCartPanel} from "../../../services/cart";
+import {useAuth} from "../../../services/auth";
+import {IfLogged} from "../auth/IfLogged.tsx";
 
 const isActive = (o: {isActive: boolean}) => 
     o.isActive ? 'text-xl text-sky-400 font-bold' : 'text-xl text-white'
@@ -11,6 +13,13 @@ export function NavBar () {
     const toggleCartPanel = useCartPanel(state => state.toggle);
     const totalCartItems = useCart(selectTotalCartItems);
     const isEmpty=useCart(selectCartIsEmpty);
+    const logout = useAuth(state => state.logout);
+    const navigate = useNavigate();
+
+    function logoutHandler() {
+        logout();
+        navigate('/login');
+    }
 
     return (
         <div className="fixed z-10 top-0 right-0 left-0 shadow-2xl">
@@ -34,9 +43,12 @@ export function NavBar () {
 
             {/*Login / CMS / Logout buttons*/}
             <div className="fixed bottom-2 right-2 text-white p-5 ">
-                <NavLink to="login" className="btn accent ">login</NavLink>
                 <NavLink to="cms" className='btn accent '>cms</NavLink>
-                <button className="btn primary ">logout</button>
+                <IfLogged else={
+                    <NavLink to="login" className="btn accent ">login</NavLink>
+                }>
+                    <button className="btn primary " onClick={logoutHandler}>logout</button>
+                </IfLogged>
             </div>
         </div>
     )
