@@ -1,4 +1,4 @@
-import type {CartItem} from "../../model/CartItem.ts";
+import type {CartItem} from "../../model/cart-item.ts";
 import type {Product} from "../../model/product.ts";
 import {create} from "zustand";
 
