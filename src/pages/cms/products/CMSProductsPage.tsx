@@ -1,16 +1,16 @@
-import {useReducer} from "react";
-import {get} from "../../../services/products/products.api.ts";
-import {initialState, productsReducer} from "../../../services/products/products.reducer.ts";
+import {useProductsService} from "../../../services/products/useProductsService.ts";
+import {ServerError} from "../../../shared";
 
 
 
 export function CMSProductsPage() {
-    const [state, dispatch] = useReducer(productsReducer, initialState);
+const {
+    state,
+    actions,
+} = useProductsService();
 
     async function getProductHandler() {
-        dispatch({ type: 'pending', payload: true});
-        const res = await get();
-        dispatch({ type: 'productsGetSuccess', payload: res.items});
+        await actions.getProducts();
     }
 
     return (
@@ -20,6 +20,7 @@ export function CMSProductsPage() {
             <hr className="my-8"/>
 
             { state.pending && <div>get products</div>}
+            { state.error && <ServerError message={state.error} />}
 
             <button
                 className="btn primary"
