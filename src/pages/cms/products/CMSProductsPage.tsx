@@ -1,26 +1,8 @@
 import {useReducer} from "react";
 import {get} from "../../../services/products/products.api.ts";
-import type {Product} from "../../../model/product.ts";
-import type {ProductsActions} from "../../../services/products/products.action.ts";
-
-export interface ProductsState {
-    products: Product[];
-    pending: boolean;
-}
+import {initialState, productsReducer} from "../../../services/products/products.reducer.ts";
 
 
-function productsReducer(state:ProductsState, action: ProductsActions) {
-    switch (action.type) {
-        case'pending':
-            return { ...state, pending: action.payload };
-        case 'productsGetSuccess':
-            return { pending: false, products:action.payload };
-    }
-    return state
-}
-
-
-const initialState: ProductsState = { pending: false, products: [] }
 
 export function CMSProductsPage() {
     const [state, dispatch] = useReducer(productsReducer, initialState);
