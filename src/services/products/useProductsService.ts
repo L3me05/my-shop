@@ -11,8 +11,9 @@ export function useProductsService() {
         try {
             const res = await ProductApi.get();
             dispatch({type: 'productsGetSuccess', payload: res.items});
-        } catch {
+        } catch (e) {
             dispatch({ type:'error', payload: 'Products not loaded'})
+            console.log(e);
         }
     }
 
@@ -21,8 +22,9 @@ export function useProductsService() {
         try {
             await ProductApi.remove(id);
             dispatch({ type: "productDeleteSuccess", payload: id })
-        } catch {
+        } catch (e) {
             dispatch({ type: "error", payload:"Product not deleted"});
+            console.log(e);
         }
     }
 
@@ -31,8 +33,9 @@ export function useProductsService() {
         try {
             const res = await ProductApi.add(product);
             dispatch({ type: "productAddSuccess", payload: res })
-        } catch {
+        } catch (e) {
             dispatch({ type: "error", payload:"Product not added"});
+            console.log(e);
         }
     }
 
@@ -41,8 +44,9 @@ export function useProductsService() {
         try {
             const res = await ProductApi.edit(product);
             dispatch({ type: "productEditSuccess", payload: res })
-        } catch {
+        } catch (e) {
             dispatch({ type: "error", payload:"Product not edited"});
+            console.log(e);
         }
     }
 
