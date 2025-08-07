@@ -1,31 +1,27 @@
-import {useProductsService} from "../../../services/products/useProductsService.ts";
+import {useProductsService} from "../../../services/products";
 import {ServerError} from "../../../shared";
+import {useEffect} from "react";
+import {Spinner} from "../../../shared/components/core/Spinner.tsx";
 
 
 
 export function CMSProductsPage() {
-const {
-    state,
-    actions,
-} = useProductsService();
+    const { state, actions, } = useProductsService();
 
-    async function getProductHandler() {
-        await actions.getProducts();
-    }
+    useEffect(() => {
+        actions.getProducts();
+    }, [])
+
 
     return (
         <>
             <h1 className="title">CMSProducts</h1>
-
+F
             <hr className="my-8"/>
 
-            { state.pending && <div>get products</div>}
+            { state.pending && <Spinner />}
             { state.error && <ServerError message={state.error} />}
 
-            <button
-                className="btn primary"
-                onClick={getProductHandler}
-            >get products</button>
 
             <pre>{JSON.stringify(state, null, 2)}</pre>
         </>
