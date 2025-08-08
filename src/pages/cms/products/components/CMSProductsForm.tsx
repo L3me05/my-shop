@@ -15,6 +15,7 @@ const initialState: Partial<Product> = {
 
 export function CMSProductsForm (props: CMSProductsFormProps) {
     const [formData, setFormData] = useState(initialState);
+    const [dirty, setDirty] = useState<boolean>(false);
 
     //per sincronizzare props con stato locale
     useEffect(() => {
@@ -25,9 +26,11 @@ export function CMSProductsForm (props: CMSProductsFormProps) {
         }
     }, [props.activeItems])
 
-    function changeHandler(e: ChangeEvent<HTMLInputElement>) {
-        const name = e.currentTarget.value;
-        setFormData(s => ({...s, name}))
+    function changeHandler(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+        const name = e.currentTarget.name;
+        const value = e.currentTarget.value;
+        setFormData(s => ({...s, [name]:value}))
+        setDirty(true);
     }
 
 
@@ -44,7 +47,10 @@ export function CMSProductsForm (props: CMSProductsFormProps) {
     }
 
     const isNameValid = formData.name?.length;
-    const isValid = isNameValid;
+    const isCostValid = formData.cost && formData.cost > 0;
+    const isDescValid = formData.description?.length;
+
+    const isValid = isNameValid && isCostValid && isDescValid;
 
     return (
         <div className={clsx(
@@ -70,15 +76,28 @@ export function CMSProductsForm (props: CMSProductsFormProps) {
                     </button>
 
                 </div>
-                <input
-                    type="text"
-                    value={formData?.name}
-                    onChange={changeHandler}
-                    className={clsx({"error": !isNameValid})}
-                />
+                <div className="flex flex-col gap-3 mx-3 mt-16">
+                    Product Name:
+                    <input
+                        className={clsx({ 'error': !isNameValid && dirty})}
+                        type="text" value={formData?.name} name="name" onChange={changeHandler}
+                    />
+
+                    Product Cost:
+                    <input
+                        className={clsx({ 'error': !isCostValid && dirty})}
+                        type="number" value={formData?.cost} name="cost" onChange={changeHandler}
+                    />
+
+                    Description
+                    <textarea
+                        className={clsx({ 'error': !isDescValid && dirty})}
+                        value={formData.description} name="description" onChange={changeHandler}
+                    ></textarea>
+
+                </div>
             </form>
 
-            {props.activeItems?.name}
 
         </div>
     )
