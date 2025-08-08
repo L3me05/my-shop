@@ -1,15 +1,8 @@
 import type {Product} from "../../../../model/product.ts";
 import clsx from "clsx";
 import {type ChangeEvent, type FormEvent, useEffect, useState} from "react";
+import {useCloudinary} from "../../../../shared";
 
-interface CloudinaryWidget {
-    openUploadWidget: (config: any, callback?: (error: any, result: any) => void) => {
-        open: () => void;
-        close: () => void;
-    };
-}
-
-declare const cloudinary: CloudinaryWidget;
 
 export interface CMSProductsFormProps {
     activeItems: Partial<Product> | null;
@@ -25,6 +18,7 @@ const initialState: Partial<Product> = {
 export function CMSProductsForm (props: CMSProductsFormProps) {
     const [formData, setFormData] = useState(initialState);
     const [dirty, setDirty] = useState<boolean>(false);
+    const { openWidget } = useCloudinary();
 
     //per sincronizzare props con stato locale
     useEffect(() => {
@@ -58,24 +52,10 @@ export function CMSProductsForm (props: CMSProductsFormProps) {
 
 
     function uploadHandler() {
-        const uploadWidget = cloudinary.openUploadWidget(
-            {
-            cloudName:'dgn36uipj',
-            uploadPreset: 'my-shop',
-            sources:['local','camera', 'url'],
-
-            },
-            function(error: any, result:any) {
-                if(!error && result.event === 'success') {
-                    const img = result.info.url;
-                    const tmb = result.info.thumbnail_url;
-                    setFormData(s => ({...s, tmb, img}));
-                }
-                console.log(result);
-            }
-        );
-        uploadWidget.open();
-
+        openWidget()
+            .then(res => {
+                setFormData(s => ({...s, ...res}))
+            })
     }
 
     const isNameValid = formData.name?.length;

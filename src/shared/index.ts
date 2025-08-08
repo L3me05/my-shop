@@ -4,3 +4,5 @@ export { CartPanel } from './components/core/CartPanel.tsx';
 
 export { IfLogged } from  './components/auth/IfLogged.tsx';
 export { PrivateRoute } from  './components/auth/PrivateRoute.tsx';
+
+export { useCloudinary } from  './hooks/useCloudinary.ts'
