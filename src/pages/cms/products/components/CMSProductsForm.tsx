@@ -2,6 +2,15 @@ import type {Product} from "../../../../model/product.ts";
 import clsx from "clsx";
 import {type ChangeEvent, type FormEvent, useEffect, useState} from "react";
 
+interface CloudinaryWidget {
+    openUploadWidget: (config: any, callback?: (error: any, result: any) => void) => {
+        open: () => void;
+        close: () => void;
+    };
+}
+
+declare const cloudinary: CloudinaryWidget;
+
 export interface CMSProductsFormProps {
     activeItems: Partial<Product> | null;
     onClose: () => void;
@@ -10,7 +19,7 @@ export interface CMSProductsFormProps {
 }
 
 const initialState: Partial<Product> = {
-    name: '', cost: 0, description:'',
+    name: '', cost: 0, description:'', tmb:'', img: '',
 }
 
 export function CMSProductsForm (props: CMSProductsFormProps) {
@@ -25,6 +34,7 @@ export function CMSProductsForm (props: CMSProductsFormProps) {
             setFormData(initialState);
         }
     }, [props.activeItems])
+
 
     function changeHandler(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const name = e.currentTarget.name;
@@ -46,6 +56,28 @@ export function CMSProductsForm (props: CMSProductsFormProps) {
         }
     }
 
+
+    function uploadHandler() {
+        const uploadWidget = cloudinary.openUploadWidget(
+            {
+            cloudName:'dgn36uipj',
+            uploadPreset: 'my-shop',
+            sources:['local','camera', 'url'],
+
+            },
+            function(error: any, result:any) {
+                if(!error && result.event === 'success') {
+                    const img = result.info.url;
+                    const tmb = result.info.thumbnail_url;
+                    setFormData(s => ({...s, tmb, img}));
+                }
+                console.log(result);
+            }
+        );
+        uploadWidget.open();
+
+    }
+
     const isNameValid = formData.name?.length;
     const isCostValid = formData.cost && formData.cost > 0;
     const isDescValid = formData.description?.length;
@@ -54,7 +86,7 @@ export function CMSProductsForm (props: CMSProductsFormProps) {
 
     return (
         <div className={clsx(
-            "fixed bg-slate-200 z-10 text-black top-0 w-96 h-full transition-all",
+            "fixed bg-slate-200 z-10 text-black top-0 w-96 h-full transition-all overflow-auto ",
             {'-right-96': !props.activeItems, 'right-0': props.activeItems}
         )}>
             <form onSubmit={saveHandler} >
@@ -76,25 +108,38 @@ export function CMSProductsForm (props: CMSProductsFormProps) {
                     </button>
 
                 </div>
-                <div className="flex flex-col gap-3 mx-3 mt-16">
+
+                {
+                    formData.img &&
+                    <div className="rounded-4xl h-56 m-4 overflow-hidden">
+                        <img src={formData.img} alt={formData.name} className="w-full"/>
+                    </div>
+                }
+
+                <div className="flex flex-col h-full gap-3 mx-3 mt-4">
                     Product Name:
                     <input
-                        className={clsx({ 'error': !isNameValid && dirty})}
+                        className={clsx('rounded-xl',{ 'error': !isNameValid && dirty})}
                         type="text" value={formData?.name} name="name" onChange={changeHandler}
                     />
 
                     Product Cost:
                     <input
-                        className={clsx({ 'error': !isCostValid && dirty})}
+                        className={clsx('rounded-xl',{ 'error': !isCostValid && dirty})}
                         type="number" value={formData?.cost} name="cost" onChange={changeHandler}
                     />
 
                     Description
                     <textarea
-                        className={clsx({ 'error': !isDescValid && dirty})}
+                        className={clsx('rounded-xl',{ 'error': !isDescValid && dirty})}
                         value={formData.description} name="description" onChange={changeHandler}
                     ></textarea>
+                </div>
 
+                <div className=" flex justify-center my-8">
+                    <button className="btn primary" type="button" onClick={uploadHandler} >
+                        UPLOAD IMAGE
+                    </button>
                 </div>
             </form>
 
