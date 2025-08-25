@@ -36,10 +36,11 @@ export function useOrdersService () {
         dispatch({ type: "pending", payload:true });
 
         try {
-            await OrderService.add(order);          //non serve un action perchè utilizzata in un punto in cui non ci serve di aggiornare lo stato
+            return await OrderService.add(order);          //non serve un action perchè utilizzata in un punto in cui non ci serve di aggiornare lo stato
         } catch (e) {
             console.error(e);
             dispatch({ type:"error", payload:'Order not added' });
+            return e;
         }
     }
 

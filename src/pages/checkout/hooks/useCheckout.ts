@@ -3,6 +3,8 @@ import {useNavigate} from "react-router-dom";
 import {type ChangeEvent, useState} from "react";
 import * as React from "react";
 import type {OrderForm} from "../../../model/order-form.ts";
+import {useOrdersService} from "../../../services/orders";
+import {ClientResponseError} from "pocketbase";
 
 export const EMAIL_REGEX= /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -11,9 +13,11 @@ export function useCheckout() {
     const order=useCart(selectCartList);
     const clearCart=useCart(state => state.clearCart);
     const navigate = useNavigate();
+    const { state, addOrder } = useOrdersService();
 
     const [user, setUser] =useState({ name:"", email:""});
     const [dirty, setDirty] = useState(false);
+
 
 
     function changeHandler(e: ChangeEvent<HTMLInputElement>) {
@@ -31,9 +35,14 @@ export function useCheckout() {
             status: 'pending',
             total: totalCost,
         }
-        console.log(orderInfo);
-        clearCart();
-        navigate('/thankyou');
+
+        addOrder(orderInfo).then((res) => {
+            if(!(res instanceof ClientResponseError)) {
+                clearCart();
+                navigate('/thankyou');
+            }
+        });
+
     }
 
     const isNameValid= user.name.length;
@@ -53,6 +62,7 @@ export function useCheckout() {
         },
         user,
         dirty,
-        totalCost
+        totalCost,
+        error: state.error,
     }
 }

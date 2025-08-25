@@ -5,7 +5,7 @@ import {ServerError} from "../../../shared";
 
 export function CMSOrdersPage() {
 
-    const { state, getOrders, deleteOrder, addOrder, toggleOrderStatus } = useOrdersService();
+    const { state, getOrders, deleteOrder, toggleOrderStatus } = useOrdersService();
 
     useEffect(() => {
         getOrders();
